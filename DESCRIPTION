@@ -2,17 +2,8 @@ Package: betararef
 Title: Beta diversity with rarefaction
 Version: 0.1
 Authors@R: "Ben Bolker <bolker@mcmaster.ca> [aut, cre]"
-Description: Compute beta diversity in communities with different average
-    population sizes via hierarchical rarefaction; also provides tools for
-    simulating communities
-Depends:
-    R (>= 3.2.0)
-Imports:
-    abind,
-    vegan,
-    reshape2,
-    ggplot2,
-    plyr,
-    permute
+Description: Compute beta diversity in communities with different average population sizes via hierarchical rarefaction; also provides tools for simulating communities
+Depends: R (>= 3.0.1)
+Imports: abind, vegan, reshape2, ggplot2, plyr, permute
 License: GPL
 LazyData: true
