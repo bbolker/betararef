@@ -215,7 +215,7 @@ simfun1 <- function(matList, tList, ttt, bstat, rarefy=TRUE,
     simvec
 }
 
-##' simulate multiple communities with *different* beta/abundance/etc.
+##' simulate multiple communities with different beta/abundance/etc.
 ##' characteristics
 ##'
 ##' @inheritParams betasim
@@ -223,6 +223,7 @@ simfun1 <- function(matList, tList, ttt, bstat, rarefy=TRUE,
 ##' @param commlabs labels for communities/treatments
 ##' @param retval return communities as a single metacommunity matrix or as a list of community matrices?
 ##' @importFrom plyr rbind.fill
+##' @export
 simComm <- function(n.indiv.site=rep(10,ncomm),
                     n.site=rep(3,ncomm),
                     spcat=rep(1,ncomm),
