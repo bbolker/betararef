@@ -222,6 +222,7 @@ betasim <- function(n.abund=5,
     d6 <- as.matrix(d5)
     dimnames(d6) <- dnames  ## restore row/column names
     d7 <- d6[,colSums(d6)>0]
+    class(d7) <- c("spmat","matrix")
     d7
 }
 

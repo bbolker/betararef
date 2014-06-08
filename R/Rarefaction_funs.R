@@ -260,6 +260,7 @@ simComm <- function(n.indiv.site=rep(10,ncomm),
         ## rbind.fill fills mismatches with NA
         ## ?? do I want to fill them with 0?  Does it matter?
         dd[is.na(dd)] <- 0
+        class(dd) <- c("commframe","data.frame")
         return(dd)
     } else return(list(matList=L,ttt=ttt))
 }
