@@ -13,6 +13,7 @@ export(simfun2)
 importClassesFrom(Matrix,Matrix)
 importFrom(Matrix,Matrix)
 importFrom(abind,abind)
+importFrom(emdbook,lambertW) ## could get this elsewhere?
 importFrom(ggplot2,cut_number)
 importFrom(lattice,levelplot)
 importFrom(permute,permControl)

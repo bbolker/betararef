@@ -10,7 +10,7 @@
 ##' @param n.indiv.tot total number of individuals
 ##' @param p.mix mixing parameter: probability of among-site mixing for each abundance category: 0=endemic, 1=homogeneous
 ##' @param seed random number seed
-##' @param rand randomization type: 'none' to keep numbers==expected numbers; 'multinom' for fixed total per site; 'poisson' for Poisson sampling
+##' @param rand randomization type: 'none' to keep numbers==expected numbers; 'multinom' for fixed total per site; 'poisson' for Poisson sampling, 'trpoisson' for truncated Poisson sampling
 ##' @param rarefy degree of rarefaction (1=none)
 ##' @param pred.spec predator specification (stub?)
 ##' @param pred.rand predator randomness
@@ -32,7 +32,7 @@ betasim <- function(n.abund=5,
                     n.indiv.tot=NULL,    
                     p.mix=rep(0,n.abund),
                     seed=NULL,
-                    rand=c("none","multinom","poisson"),
+                    rand=c("none","multinom","poisson","trpoisson"),
                     rarefy=1,
                     pred.spec=c("none","focal","abund"),
                     pred.rand=c("binom","none"),
@@ -153,6 +153,8 @@ betasim <- function(n.abund=5,
             }
         } else if (rand=="poisson") {  ## allow variation
             d2[] <- rpois(length(d),lambda=n.indiv.site*d)
+        } else if (rand=="trpoisson") {  ## truncated Poisson
+            d2[] <- rtrpois(length(d),lambda=n.indiv.site*d)
         }  else if (rand=="none") {
             d2[] <- n.indiv.site*d
         }
@@ -272,3 +274,26 @@ calcbeta <- function(m,method="jaccard",
     }
     retval
 }
+
+## https://stat.ethz.ch/pipermail/r-help/2005-May/070678.html
+## m1 = m2/(1-exp(-m2))  ## pre-truncation mean to truncated mean
+## m1-m1*exp(-m2)=m2
+## m1 = m2*(1+m1*exp(-m2))
+## according to Wolfram Alpha,
+## m2 = W(-m1*exp(-m1))+m1
+##
+## m2 <- 5
+## m1 <- m2/(1-exp(-m2))
+## emdbook::lambertW(-m1*exp(-m1))+m1
+
+rtrpois <- function(n,lambda) {
+    ## recover pre-truncation mean from truncated mean
+    lambda0 <- lambertW(-lambda*exp(-lambda))+lambda
+    U <- runif(n)   # the uniform sample
+    t0 = -log(1 - U*(1 - exp(-lambda0))) # the "first" event-times
+    T1<-(lambda0 - t0)   # the set of (T-t)
+    rpois(n,T1)+1 # the final truncated Poisson sample
+}
+## test
+## mean(rtrpois(100000,lambda=2.5))
+## mean(rtrpois(100000,lambda=17))

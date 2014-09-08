@@ -9,6 +9,7 @@ Depends:
     R (>= 3.0.1)
 Imports:
     abind,
+    emdbook,
     vegan,
     reshape2,
     ggplot2,
