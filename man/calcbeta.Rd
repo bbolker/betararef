@@ -4,7 +4,7 @@
 \title{compute beta diversity summary statistic}
 \usage{
 calcbeta(m, method = "jaccard", distances = c("centroid", "pairwise"),
-  trap.errors = TRUE, transFun = identity, binaryFlag = FALSE, ...)
+  trap.errors = TRUE, trans = NULL, ...)
 }
 \arguments{
 \item{m}{community matrix}
@@ -15,9 +15,7 @@ calcbeta(m, method = "jaccard", distances = c("centroid", "pairwise"),
 
 \item{trap.errors}{replace error returns with NA values?}
 
-\item{transFun}{transform (e.g. for taking square-root of abundances)}
-
-\item{binaryFlag}{compute presence.absence statistics?}
+\item{trans}{transformation to be used; specifies the \code{method} parameter for \code{\link{decostand}}.  A value of \code{NULL} indicates the default, which depends on the value of \code{method}: \code{"hellinger"} for \code{"manhattan"}, \code{"log"} for \code{"gower"} or \code{"altGower"}, and \code{"pa"} (presence-absence, i.e. reduce data to binary outcomes) for \code{"jaccard"} or \code{"raup"}.}
 
 \item{\dots}{additional parameters for \code{raupcrick}}
 }

@@ -20,7 +20,7 @@
 ##' @param no.zero.patch force all patches to have positive occupancy?
 ##' @importFrom abind abind
 ##' @importFrom reshape2 dcast
-##' @importFrom vegan betadisper raupcrick vegdist
+##' @importFrom vegan betadisper raupcrick vegdist decostand
 ##' @export
 betasim <- function(n.abund=5,        
                     p.abund=0.5,      
@@ -232,17 +232,15 @@ betasim <- function(n.abund=5,
 ##'
 ##' @param m community matrix
 ##' @param method diversity measure
-##' @param distances calculate average distance to centroid or average pairwise distance?
+##' @param distances calculate average distance to centroid or average pairwise distance?  The former is generally recommended, but the latter gives results that are easier to compare across treatments with different numbers of patches/sites/communities.
 ##' @param trap.errors replace error returns with NA values?
-##' @param transFun transform (e.g. for taking square-root of abundances)
-##' @param binaryFlag compute presence.absence statistics?
+##' @param trans transformation to be used; specifies the \code{method} parameter for \code{\link{decostand}}.  A value of \code{NULL} indicates the default, which depends on the value of \code{method}: \code{"hellinger"} for \code{"manhattan"}, \code{"log"} for \code{"gower"} or \code{"altGower"}, and \code{"pa"} (presence-absence, i.e. reduce data to binary outcomes) for \code{"jaccard"} or \code{"raup"}.  Use \code{"identity"} if you want to override the defaults and calculate distances from un-transformed data.
 ##' @param \dots additional parameters for \code{raupcrick}
 ##' @export
 calcbeta <- function(m,method="jaccard",
                      distances=c("centroid","pairwise"),
                      trap.errors=TRUE,
-                     transFun=identity,
-                     binaryFlag=FALSE,
+                     trans=NULL,
                      ...) {
     ## calculate beta distances
     if (method=="raupcrick2") {
@@ -250,13 +248,14 @@ calcbeta <- function(m,method="jaccard",
     }
     distances <- match.arg(distances)
     nsites <- nrow(m)
-    if (missing(binaryFlag) && method %in% c("jaccard","raup"))
-        binaryFlag <- TRUE
-    if (missing(transFun)) {
-        transFun <- switch(method, manhattan=sqrt, gower=, altGower=log,
-                           identity)
+    if (is.null(trans)) {
+        trans <- switch(method, manhattan="hellinger",
+                        gower=, altGower="log",
+                        jaccard=, raup="pa",
+                        NULL)
     }
-    vv <- vegdist(transFun(m),method=method,binary=binaryFlag)
+    vv <- vegdist(if (is.null(trans) || trans=="identity") m else decostand(m,trans),
+                  method=method)
     nvals <- switch(distances,centroid=nsites,pairwise=nsites*(nsites-1)/2)
     if (all(vv==0)) return(rep(0,nvals)) ## all identical sites
     ##  if (any(vv==0)) NA else
@@ -275,6 +274,7 @@ calcbeta <- function(m,method="jaccard",
     retval
 }
 
+## truncated Poisson info, from
 ## https://stat.ethz.ch/pipermail/r-help/2005-May/070678.html
 ## m1 = m2/(1-exp(-m2))  ## pre-truncation mean to truncated mean
 ## m1-m1*exp(-m2)=m2
@@ -297,3 +297,13 @@ rtrpois <- function(n,lambda) {
 ## test
 ## mean(rtrpois(100000,lambda=2.5))
 ## mean(rtrpois(100000,lambda=17))
+
+dtrpois <- function(x,lambda,log=FALSE) {
+    r <- ifelse(x<1,-Inf,dpois(x,lambda,log=TRUE))
+    if (log) r else exp(r)
+}
+## set.seed(101)
+## pp <- prop.table(table(rtrpois(100000,lambda=4.5)))
+## par(las=1,bty="l")
+## plot(pp,type="h")
+## points(1:15,dtrpois(1:15,4.5),col="red",pch=16,cex=2)

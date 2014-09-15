@@ -6,9 +6,9 @@
 betasim(n.abund = 5, p.abund = 0.5, diff.abund = NULL, spcat = 2,
   totsp = 30, n.site = 3, n.indiv.site = 100, n.indiv.tot = NULL,
   p.mix = rep(0, n.abund), seed = NULL, rand = c("none", "multinom",
-  "poisson"), rarefy = 1, pred.spec = c("none", "focal", "abund"),
-  pred.rand = c("binom", "none"), pred.gamma = -Inf, pred.alpha = 0,
-  pred.gamma.sd = 0, no.zero.patch = TRUE)
+  "poisson", "trpoisson"), rarefy = 1, pred.spec = c("none", "focal",
+  "abund"), pred.rand = c("binom", "none"), pred.gamma = -Inf,
+  pred.alpha = 0, pred.gamma.sd = 0, no.zero.patch = TRUE)
 }
 \arguments{
 \item{n.abund}{number of abundance categories}
@@ -31,7 +31,7 @@ betasim(n.abund = 5, p.abund = 0.5, diff.abund = NULL, spcat = 2,
 
 \item{seed}{random number seed}
 
-\item{rand}{randomization type: 'none' to keep numbers==expected numbers; 'multinom' for fixed total per site; 'poisson' for Poisson sampling}
+\item{rand}{randomization type: 'none' to keep numbers==expected numbers; 'multinom' for fixed total per site; 'poisson' for Poisson sampling, 'trpoisson' for truncated Poisson sampling}
 
 \item{rarefy}{degree of rarefaction (1=none)}
 

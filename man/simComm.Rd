@@ -28,7 +28,7 @@ simComm(n.indiv.site = rep(10, ncomm), n.site = rep(3, ncomm),
 
 \item{totsp}{total species pool size (FIXME)}
 
-\item{rand}{randomization type: 'none' to keep numbers==expected numbers; 'multinom' for fixed total per site; 'poisson' for Poisson sampling}
+\item{rand}{randomization type: 'none' to keep numbers==expected numbers; 'multinom' for fixed total per site; 'poisson' for Poisson sampling, 'trpoisson' for truncated Poisson sampling}
 }
 \description{
 simulate multiple communities with different beta/abundance/etc.
