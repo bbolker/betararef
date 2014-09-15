@@ -1,0 +1,9 @@
+## make sure permute, vegan, abind, reshape2, emdbook packages installed
+BATCHNUM=11
+module unload intel; module load r/3.1.1
+for ABUND in {1..41}; do
+  fn=betasim_batch${BATCHNUM}$ABUND
+  echo $ABUND
+  sed -e "s/ABUND/$ABUND/g" < betasim_batch${BATCHNUM}.R > $fn.R
+  sqsub -q serial -o $fn.%J.out --mpp 500M -r 24h R CMD BATCH --vanilla $fn.R
+done
