@@ -28,8 +28,6 @@ simfun2(..., bstat, rarefy = TRUE, .progress = "text", nsim = 100)
 \item{nsim}{number of simulations}
 
 \item{\dots}{arguments passed to \code{simfun1}}
-
-\item{...}{arguments passed to \code{simfun1}}
 }
 \description{
 rarefy once (maybe) and spit out F statistic(s)

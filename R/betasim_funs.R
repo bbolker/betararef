@@ -286,6 +286,18 @@ calcbeta <- function(m,method="jaccard",
 ## m1 <- m2/(1-exp(-m2))
 ## emdbook::lambertW(-m1*exp(-m1))+m1
 
+##' Truncated Poisson distribution
+##' @param n number of random deviations
+##' @param lambda mean of \emph{truncated} distribution
+##' @importFrom emdbook lambertW
+##' @export
+##' @examples
+##' set.seed(101)
+##' pp <- prop.table(table(rtrpois(100000,lambda=4.5)))
+##' par(las=1,bty="l")
+##' plot(pp,type="h")
+##' points(1:15,dtrpois(1:15,4.5),col="red",pch=16,cex=2)
+
 rtrpois <- function(n,lambda) {
     ## recover pre-truncation mean from truncated mean
     lambda0 <- lambertW(-lambda*exp(-lambda))+lambda
@@ -294,16 +306,12 @@ rtrpois <- function(n,lambda) {
     T1<-(lambda0 - t0)   # the set of (T-t)
     rpois(n,T1)+1 # the final truncated Poisson sample
 }
-## test
-## mean(rtrpois(100000,lambda=2.5))
-## mean(rtrpois(100000,lambda=17))
 
+##' @rdname rtrpois
+##' @param x observed number of counts
+##' @param log return log-density?
+##' @export
 dtrpois <- function(x,lambda,log=FALSE) {
     r <- ifelse(x<1,-Inf,dpois(x,lambda,log=TRUE))
     if (log) r else exp(r)
 }
-## set.seed(101)
-## pp <- prop.table(table(rtrpois(100000,lambda=4.5)))
-## par(las=1,bty="l")
-## plot(pp,type="h")
-## points(1:15,dtrpois(1:15,4.5),col="red",pch=16,cex=2)

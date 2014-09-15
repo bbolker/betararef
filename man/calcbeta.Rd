@@ -11,11 +11,11 @@ calcbeta(m, method = "jaccard", distances = c("centroid", "pairwise"),
 
 \item{method}{diversity measure}
 
-\item{distances}{calculate average distance to centroid or average pairwise distance?}
+\item{distances}{calculate average distance to centroid or average pairwise distance?  The former is generally recommended, but the latter gives results that are easier to compare across treatments with different numbers of patches/sites/communities.}
 
 \item{trap.errors}{replace error returns with NA values?}
 
-\item{trans}{transformation to be used; specifies the \code{method} parameter for \code{\link{decostand}}.  A value of \code{NULL} indicates the default, which depends on the value of \code{method}: \code{"hellinger"} for \code{"manhattan"}, \code{"log"} for \code{"gower"} or \code{"altGower"}, and \code{"pa"} (presence-absence, i.e. reduce data to binary outcomes) for \code{"jaccard"} or \code{"raup"}.}
+\item{trans}{transformation to be used; specifies the \code{method} parameter for \code{\link{decostand}}.  A value of \code{NULL} indicates the default, which depends on the value of \code{method}: \code{"hellinger"} for \code{"manhattan"}, \code{"log"} for \code{"gower"} or \code{"altGower"}, and \code{"pa"} (presence-absence, i.e. reduce data to binary outcomes) for \code{"jaccard"} or \code{"raup"}.  Use \code{"identity"} if you want to override the defaults and calculate distances from un-transformed data.}
 
 \item{\dots}{additional parameters for \code{raupcrick}}
 }

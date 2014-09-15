@@ -202,7 +202,6 @@ simfun0 <- function(matList,tList,ttt, rarefy=TRUE,bstat="Fstat") {
 ##'  return vector (or matrix) of F statistics
 ##'
 ##' @rdname simfun2
-##' @inheritParams simfun2
 ##' @param matList list of community matrices
 ##' @param tList list of target sizes for each community
 ##' @param ttt treatment vector
