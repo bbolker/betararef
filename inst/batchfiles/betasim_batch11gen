@@ -1,9 +1,17 @@
-## make sure permute, vegan, abind, reshape2, emdbook packages installed
+## options(repos=c(CRAN="http://probability.ca/cran/"))
+## library("devtools"); install_github("betararef",user="bbolker")
 BATCHNUM=11
 module unload intel; module load r/3.1.1
 for ABUND in {1..41}; do
-  fn=betasim_batch${BATCHNUM}$ABUND
-  echo $ABUND
-  sed -e "s/ABUND/$ABUND/g" < betasim_batch${BATCHNUM}.R > $fn.R
-  sqsub -q serial -o $fn.%J.out --mpp 500M -r 24h R CMD BATCH --vanilla $fn.R
+  for METHOD in pairwise centroid; do
+      for DISTANCE in altGower bray canberra chao gower horn jaccard manhattan morisita raup; do
+          v=${METHOD}_${DISTANCE}_${ABUND}
+          fn=betasim_batch${BATCHNUM}$v
+	  echo $v
+          sed -e "s/ABUND/$ABUND/g" \
+              -e "s/METHOD/$METHOD/g" \
+              -e "s/DISTANCE/$DISTANCE/g" < betasim_batch${BATCHNUM}.R > $fn.R
+          sqsub -q serial -o $fn.%J.out --mpp 500M -r 4h R CMD BATCH --vanilla $fn.R
+     done
+   done
 done

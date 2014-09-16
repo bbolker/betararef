@@ -1,7 +1,7 @@
 ## see betasim_batch*gen
 BATCHNUM <- 11
 setwd("/work/bolker/projects/beta")  ## for SHARCnet
-batchfile <- paste0("betasim_batch",BATCHNUM,"_ABUND.RData")
+batchfile <- paste0("betasim_batch",BATCHNUM,"_METHOD_DISTANCE_ABUND.RData")
 
 library(betararef)
 library(reshape2) ## for melt
@@ -17,8 +17,8 @@ spcurvevec <- c(0.5,0.2,0.05,0.02)               ## rank-abundance curve
 rep <- 400
 gammadiv <- 20
 verbose <- TRUE
-distvec1 <- c("bray","morisita","horn")
-distvec2 <- c("pairwise","centroid")
+distvec1 <- "DISTANCE" ## altGower bray canberra chao gower horn jaccard manhattan morisita raup
+distvec2 <- "METHOD" ## c("pairwise","centroid")
 beta_mix <- array(NA,
                   dim=c(
                   length(distvec1),
@@ -62,6 +62,7 @@ for (d1 in seq_along(distvec1)) {
                                               spcat=gammadiv/stvec[j],
                                               n.site=stvec[j],
                                               n.indiv.site=abundvec[i],
+                                              ## DON'T try tr. Poisson for now
                                               rand="poisson",
                                               rarefy=1,
                                               p.mix=c(pmixcommonvec[k],pmixrarevec[l]))
