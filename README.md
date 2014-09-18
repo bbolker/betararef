@@ -5,3 +5,4 @@ Compute rarefied beta diversity and simulate communities (R package).  Accompani
 
 **Installation**: for now, use `library(devtools); install_github("betararef","bbolker")` (don't forget `library("betararef")` to load the package). Then `help(package="betararef")` to see what's available.
 
+`inst/batchfiles` contains example batch files used on a high-performance cluster (SHARCnet) to generate expected (realized) beta diversity across a broad range of community structures, sample sizes, and diversity indices.
