@@ -3,14 +3,14 @@
 \name{raref_test}
 \alias{raref_test}
 \alias{raref_test2}
-\title{rarefaction test}
+\title{Rarefaction test}
 \usage{
 raref_test(comm, ttt, .progress = "text", n_raref = 50, type = c("Fmean",
   "pmean", "pbinom", "singlecomp"), rarefy = TRUE)
 
 raref_test2(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
-  binary = TRUE, type = c("raref_perm_meanF", "raref_perm_meanp",
-  "raref_perm_medianp"), return.all = FALSE, dummy_raref = FALSE)
+  binary = TRUE, ptype = c("raref_perm_medianp", "raref_perm_meanF",
+  "raref_perm_meanp"), return.all = FALSE, dummy_raref = FALSE)
 }
 \arguments{
 \item{comm}{community matrix (patches=rows, species=columns)}
@@ -21,21 +21,23 @@ raref_test2(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
 
 \item{n_raref}{number of rarefactions}
 
-\item{type}{method}
+\item{type}{method for computing the p-value: "Fmean": compute mean observed F-statistic across rarefactions; compute p-value from the mean of the cumulative distribution functions of F statistics. "pmean": compute the mean observed p-value across replicates. "pbinom": compute the probability x>= N(obs>perm) for binom with size n_raref. "singlecomp": compute the probability that the observed values are less than the permutation values}
 
-\item{rarefy}{actually perform rarefaction?}
+\item{rarefy}{actually perform rarefaction? [TESTING ONLY]}
 
 \item{nperm}{number of permutations}
 
-\item{method}{beta diversity metric}
+\item{method}{beta diversity metric (passed to vegan::betadisper)}
 
-\item{binary}{use presence/absence?}
+\item{binary}{reduce data to presence/absence? (passed to vegan::betadisper)}
 
-\item{return.all}{return all information?}
+\item{ptype}{p-value calculations: "raref_perm_meanF", calculate mean F-statistics within permutations; "raref_perm_meanp", calculate mean p-value across permutations; "raref_perm_medianp", calculate median p-value across permutations.  The default (raref_perm_medianp) is used}
 
-\item{dummy_raref}{fake rarefaction?}
+\item{return.all}{(logical) [TESTING ONLY] return all information rather than summarized test statistics?}
+
+\item{dummy_raref}{(logical) [TESTING ONLY] fake rarefaction? (i.e., don't actually do any rarefaction)}
 }
 \description{
-rarefaction test
+Rarefaction test
 }
 

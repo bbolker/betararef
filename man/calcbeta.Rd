@@ -2,7 +2,7 @@
 % Please edit documentation in R/betasim_funs.R
 \name{calcbeta}
 \alias{calcbeta}
-\title{compute beta diversity summary statistic}
+\title{Compute beta diversity summary statistic via distances from centroid}
 \usage{
 calcbeta(m, method = "jaccard", distances = c("centroid", "pairwise"),
   trap.errors = TRUE, trans = NULL, ...)
@@ -21,6 +21,6 @@ calcbeta(m, method = "jaccard", distances = c("centroid", "pairwise"),
 \item{\dots}{additional parameters for \code{raupcrick}}
 }
 \description{
-compute beta diversity summary statistic
+Compute beta diversity summary statistic via distances from centroid
 }
 

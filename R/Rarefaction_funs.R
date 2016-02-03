@@ -1,4 +1,3 @@
-
 ##' Find target sizes for rarefaction of samples for multiple treatments
 ##' down to a common size.
 ##'
@@ -134,15 +133,18 @@ sampleRow <- function(xmat,n.target,spnames=names(xmat)) {
                levels=spnames))
 }
 
-##' Resample a community matrix
+##' Individual-based resampling/rarefaction of a community matrix
 ##' 
-##' @param x a species abundance matrix to rarefy
+##' @param x a species abundance matrix to rarefy (rows=sites, columns=species)
 ##' @param n.target rarefied size for each sample
+##' @param debug (logical) debugging flag
 ##' @return a matrix of the same structure as the original
-sampleMat <- function(x,n.target) {
-  for (i in 1:nrow(x))
-    x[i,] <- sampleRow(x[i,],n.target[i],colnames(x))
-  x
+##' @export
+sampleMat <- function(x,n.target,debug=FALSE) {
+    which(rowSums(x)<n.target)
+    for (i in 1:nrow(x))
+        x[i,] <- sampleRow(x[i,],n.target[i],colnames(x))
+    x
 }
 
 sampleList <- function(matList,targetList) {
@@ -224,7 +226,10 @@ simfun1 <- function(matList, tList, ttt, bstat, rarefy=TRUE,
 ##' @param ncomm number of communities
 ##' @param commlabs labels for communities/treatments
 ##' @param retval return communities as a single metacommunity matrix or as a list of community matrices?
+##' @param seed random-number seed
 ##' @importFrom plyr rbind.fill
+##' @examples
+##' plot(simComm(totsp=c(30,30),p.mix=c(0.2,0.7)))
 ##' @export
 simComm <- function(n.indiv.site=rep(10,ncomm),
                     n.site=rep(3,ncomm),
@@ -235,7 +240,9 @@ simComm <- function(n.indiv.site=rep(10,ncomm),
                     totsp=rep(3,ncomm),
                     rand="poisson",
                     commlabs=letters[1:ncomm],
-                    retval=c("combined","list")) {
+                    retval=c("combined","list"),
+                    seed=NULL) {
+    if (!is.null(seed)) set.seed(seed)
     retval <- match.arg(retval)
     ## (allow combination of data frames w/ different numbers of
     ##  columns, filling in NA as appropriate)
@@ -288,14 +295,14 @@ simfun2 <- function(..., bstat, rarefy=TRUE,
                     nsim=nsim)
 }
 
-##' rarefaction test
-##'
+##' Rarefaction test
+##' 
 ##' @param comm community matrix (patches=rows, species=columns)
 ##' @param ttt treatment vector (treatment id of each patch)
 ##' @param .progress progress bar type -- passed through to \code{\link{raply}}
 ##' @param n_raref number of rarefactions
-##' @param type method
-##' @param rarefy actually perform rarefaction?
+##' @param type method for computing the p-value: "Fmean": compute mean observed F-statistic across rarefactions; compute p-value from the mean of the cumulative distribution functions of F statistics. "pmean": compute the mean observed p-value across replicates. "pbinom": compute the probability x>= N(obs>perm) for binom with size n_raref. "singlecomp": compute the probability that the observed values are less than the permutation values
+##' @param rarefy actually perform rarefaction? [TESTING ONLY]
 ##' @export
 raref_test <- function(comm,ttt,.progress="text",n_raref=50,
                        type=c("Fmean","pmean","pbinom","singlecomp"),
@@ -350,25 +357,38 @@ raref_test <- function(comm,ttt,.progress="text",n_raref=50,
               class = "htest")
 }
 
-## rarefaction testing with rarefactions within permutations
+## Rarefaction testing with rarefactions within permutations
 ##' @importFrom plyr raply
 ##' @importFrom permute shuffle
 
 ##' @rdname raref_test
 ##' @inheritParams raref_test
-##' @param dummy_raref fake rarefaction?
-##' @param return.all  return all information?
+##' @param dummy_raref (logical) [TESTING ONLY] fake rarefaction? (i.e., don't actually do any rarefaction)
+##' @param return.all  (logical) [TESTING ONLY] return all information rather than summarized test statistics?
 ##' @param nperm  number of permutations
-##' @param method beta diversity metric
-##' @param binary use presence/absence?
+##' @param binary reduce data to presence/absence? (passed to vegan::betadisper)
+##' @param method beta diversity metric (passed to vegan::betadisper)
+##' @param ptype p-value calculations: "raref_perm_meanF", calculate mean F-statistics within permutations; "raref_perm_meanp", calculate mean p-value across permutations; "raref_perm_medianp", calculate median p-value across permutations.  The default (raref_perm_medianp) is used
+##' @param seed random-number seed
+##' @examples
+##' tmpf <- function(...) {
+##'    sx <- simComm(...)
+##'    tt <- try(raref_test2(sx[,-1],sx[,1])$p.value)
+##'    if (is(tt,"try-error")) return(NA) else return(tt)
+##' }
+##' set.seed(101)
+##' sx <- simComm(n.site=20,p.mix=0.5,n.indiv.site=c(10,20),totsp=c(20,40))
+##' raref_test2(sx[,-1],sx[,1])
 ##' @export
 raref_test2 <- function(comm,ttt,n_raref=50,nperm=200,
                         method="jaccard",binary=TRUE,
-                        type=c("raref_perm_meanF","raref_perm_meanp",
-                        "raref_perm_medianp"),
+                        ptype=c( "raref_perm_medianp",
+                                "raref_perm_meanF","raref_perm_meanp"),
                         return.all=FALSE,
-                        dummy_raref=FALSE) {
-    type <- match.arg(type)
+                        dummy_raref=FALSE,
+                        seed=NULL) {
+    if (!is.null(seed)) set.seed(seed)
+    ptype <- match.arg(ptype)
     matList <- split.data.frame(comm,ttt)
     nList <- lapply(matList,rowSums)  ## numbers per patch
     tvec <- unlist(findTargets(nList))
@@ -414,20 +434,20 @@ raref_test2 <- function(comm,ttt,n_raref=50,nperm=200,
     }
     ## now calculate mean Fstatistics **within permutations**
     ## still need to sort before taking the mean!
-    if (type=="raref_perm_meanF")  {
+    if (ptype=="raref_perm_meanF")  {
         res[,-1] <- t(apply(res[,-1],1,sort))
         resmeans <- colMeans(res)
         pval <- mean(resmeans[1]<=resmeans[-1])
     }
-    else if (type=="raref_perm_meanp") {
+    else if (ptype=="raref_perm_meanp") {
         pval <- mean(apply(res,1,function(x) mean(x[1]<=x[-1])))
-    } else if (type=="raref_perm_medianp") {
+    } else if (ptype=="raref_perm_medianp") {
         pval <- median(apply(res,1,function(x) mean(x[1]<=x[-1])))
-    } else stop("unknown type")
+    } else stop("unknown ptype")
     obs <- mean(res[,1])
     structure(list(
         method=paste0("hierarchical rarefaction with permDISP (n_raref=",
-        n_raref,",type=",type,")"),
+        n_raref,",ptype=",ptype,")"),
         data.name=deparse(substitute(comm)),
         statistic = c("F"=obs),
         p.value = pval),

@@ -35,4 +35,7 @@ simComm(n.indiv.site = rep(10, ncomm), n.site = rep(3, ncomm),
 simulate multiple communities with different beta/abundance/etc.
 characteristics
 }
+\examples{
+plot(simComm(totsp=c(30,30),p.mix=c(0.2,0.7)))
+}
 

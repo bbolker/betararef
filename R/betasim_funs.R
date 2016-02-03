@@ -1,4 +1,3 @@
-
 ##' Simulate communities with specified diversity characteristics
 ##' @param n.abund number of abundance categories
 ##' @param p.abund relative ranking of subsequent abundance categories
@@ -18,6 +17,24 @@
 ##' @param pred.alpha predator preference parameter; if \code{pred.spec=="abund"} 0=neutral, -1=pref. rare, +1=pref. common; if pred.spec=="focal" 0=neutral, -1=pref non-endemic, +1=pref endemic
 ##' @param pred.gamma.sd patch-to-patch variability in predation intensity (0=none)
 ##' @param no.zero.patch force all patches to have positive occupancy?
+##' @examples
+##' ## Use default values: 3 sites (rows) with a total of
+##' ## 30 species: 5 abundance classes x 2 species per site x 3 sites.
+##' ## By default there is no mixing among sites (100% beta diversity).
+##' ## The default plot (rows=sites, columns=species) shows that each site has blocks of 2 species from each abundance class (grayscale indicates prevalence).
+##' ## The default for betasim is to introduce no randomness at all, simply returning a matrix with the expected number of individuals of each species at each site.
+##' set.seed(101)
+##' b0 <- betasim()
+##' plot(b0)
+##' ## Specify 100% mixing now all species are present at all sites in
+##' ## the same numbers:
+##' plot(betasim(p.mix=1))
+##' ## Partial mixing:
+##' plot(betasim(p.mix=0.5))
+##' ## Add Poisson randomness:
+##' plot(betasim(p.mix=0.5,rand="poisson"))
+##' ## Change the number sites or the number of abundance classes: by default, the spcat (number of species per site per abundance category) will be adapted to try to make the total number of species come out correctly (i.e. spcat will be set to totsp/(n.site*n.abund).  If totsp is not an even multiple of n.site*n.abund}, the results may be unpredictable.
+##' plot(betasim(n.site=5,n.abund=3,p.mix=0.25,rand="poisson"))
 ##' @importFrom abind abind
 ##' @importFrom reshape2 dcast
 ##' @importFrom vegan betadisper raupcrick vegdist decostand
@@ -230,7 +247,7 @@ betasim <- function(n.abund=5,
     d7
 }
 
-##' compute beta diversity summary statistic
+##' Compute beta diversity summary statistic via distances from centroid
 ##'
 ##' @param m community matrix
 ##' @param method diversity measure
@@ -238,6 +255,11 @@ betasim <- function(n.abund=5,
 ##' @param trap.errors replace error returns with NA values?
 ##' @param trans transformation to be used; specifies the \code{method} parameter for \code{\link{decostand}}.  A value of \code{NULL} indicates the default, which depends on the value of \code{method}: \code{"hellinger"} for \code{"manhattan"}, \code{"log"} for \code{"gower"} or \code{"altGower"}, and \code{"pa"} (presence-absence, i.e. reduce data to binary outcomes) for \code{"jaccard"} or \code{"raup"}.  Use \code{"identity"} if you want to override the defaults and calculate distances from un-transformed data.
 ##' @param \dots additional parameters for \code{raupcrick}
+##' @examples
+##' \dontrun{
+##' d1 <- replicate(1000,median(calcbeta(betasim(rand="poiss",p.mix=0.25))))
+##' par(las=1,bty="l")
+##' hist(d1,col="gray",main="",xlab="median Jaccard distance from centroid", freq=FALSE)
 ##' @export
 calcbeta <- function(m,method="jaccard",
                      distances=c("centroid","pairwise"),

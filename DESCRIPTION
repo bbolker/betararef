@@ -20,7 +20,8 @@ Imports:
     plyr,
     permute
 Suggests:
-    testthat
+    testthat,
+    xtable
 License: GPL
 LazyData: true
 RoxygenNote: 5.0.1
