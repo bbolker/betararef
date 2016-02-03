@@ -1,5 +1,6 @@
 %\VignetteEngine{knitr::knitr}
 %\VignetteDepends{ggplot2}
+%\VignetteDepends{xtable}
 %\VignetteIndexEntry{Using the betararef package}
 \documentclass{article}
 \usepackage{scrtime}
@@ -354,19 +355,23 @@ Mean and standard error of type~I error rate (true difference
 in asymptotic beta diversity/mixing parameter=0), by differences
 in numbers of sites, \emph{not} including patch size=20 case
 for 30-site \{5,35\} case:
-<<meana1,echo=FALSE>>=
+
+<<meana1,echo=FALSE,results="asis">>=
+library("xtable")
 meanalpha1 <- ddply(ss,"sizediff",summarise,
                     a.mean=mean(value),
                     a.se=sd(value)/sqrt(length(value)))
-print(meanalpha1,digits=2)
+print(xtable(meanalpha1,digits=3),floating=FALSE,include.rownames=FALSE)
 @
 
+\vskip10pt
 For patch size=20, number of sites=\{5,35\}:
-<<meana2,echo=FALSE>>=
+
+<<meana2,echo=FALSE,results="asis">>=
 meanalpha2 <- summarise(subset(ss0,sizediff==30 & popsize==20),
                     a.mean=mean(value),
                     a.se=sd(value)/sqrt(length(value)))
-print(meanalpha2,digits=2)
+print(xtable(meanalpha2,digits=3),floating=FALSE,include.rownames=FALSE)
 @
 
 \bibliography{appendix1}
