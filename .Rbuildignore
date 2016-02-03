@@ -1,1 +1,15 @@
 LICENSE
+.git
+.gitignore
+^.RData
+\.aux$
+\.dvi$
+\.log$
+\.bst$
+\.bbl$
+\.blg$
+\.out$
+\.tex$
+\.tar.gz$
+\.Rhistory$
+

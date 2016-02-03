@@ -26,6 +26,8 @@
 ##' nList <- list(5:10,1:10)
 ##' set.seed(101)
 ##' (f2 <- findTargets(nList))
+##' @importFrom stats anova lm median pbinom
+##' @importFrom vegan permutest
 ##' @export
 findTargets <- function(nList,method=c("rankMatch","randomMatch","smallest"),
                         maxit=1000, debug=FALSE) {
@@ -173,16 +175,17 @@ calcbeta_stat <- function(m,ttt,method="jaccard",binary=TRUE,
     } else if (stat=="Fstat_perm") {
         ## return vector: first element is observed,
         ##  remainder are permuted F-statistics
-        p <- permutest.betadisper(b,savePerms=TRUE)
-        return(attr(p,"perms"))
+        pp <- permutest(b)
+        vals <- c(pp$statistic[1],pp$permutations[,1])
+        return(vals)
     } else if (stat=="pval_perm") {
-        p <- permutest.betadisper(b)$tab[["Pr(>F)"]][1]
+        p <- permutest(b)$tab[["Pr(>F)"]][1]
         return(p)
     } else if (stat=="pval_Fstat_perm") {
-        pp <- permutest.betadisper(b)
-        c(pval=pp$tab[["Pr(>F)"]][1],F=pp$tab[["F"]][1])
+        pp <- permutest(b)
+        return(c(pval=pp$tab[["Pr(>F)"]][1],
+                 F=pp$tab[["F"]][1]))
     }
-    else stop("unknown stat")
 }
 
 ## permute species matrix (not currently used)

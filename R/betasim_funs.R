@@ -21,6 +21,8 @@
 ##' @importFrom abind abind
 ##' @importFrom reshape2 dcast
 ##' @importFrom vegan betadisper raupcrick vegdist decostand
+##' @importFrom stats dpois rpois rmultinom rbinom rnorm runif plogis
+##' @importFrom utils as.roman
 ##' @export
 betasim <- function(n.abund=5,        
                     p.abund=0.5,      

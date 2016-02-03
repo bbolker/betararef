@@ -7,7 +7,8 @@
 ##' @importFrom Matrix Matrix
 ##' @importClassesFrom Matrix Matrix
 ##' @importMethodsFrom Matrix image
-##' @export plot.spmat
+##' @importFrom grDevices grey
+##' @export
 plot.spmat <- function(x,y, aspect="fill", ...) {
     class(x) <- "matrix" ## strip spmat
     image(Matrix(x),xlab="Species",ylab="Patch",sub="",aspect=aspect,
@@ -17,7 +18,7 @@ plot.spmat <- function(x,y, aspect="fill", ...) {
 
 ##' @importFrom lattice levelplot
 ##' @importFrom reshape2 melt
-##' @export plot.commframe
+##' @export
 ##' @rdname plot.spmat
 plot.commframe <- function(x,y,aspect="fill", ...) {
   m <- x[,-1]
