@@ -51,4 +51,31 @@ betasim(n.abund = 5, p.abund = 0.5, diff.abund = NULL, spcat = 2,
 \description{
 Simulate communities with specified diversity characteristics
 }
+\examples{
+## Use default values: 3 sites (rows) with a total of
+## 30 species: 5 abundance classes x 2 species per site x 3 sites.
+## By default there is no mixing among sites (100\% beta diversity).
+## The default plot (rows=sites, columns=species) shows that each site
+## has blocks of 2 species from each abundance class (grayscale indicates
+## prevalence). The default for \\code{betasim} is to do a deterministic
+## simulation, simply returning a matrix with the expected number of
+## individuals of each species at each site.
+set.seed(101)
+b0 <- betasim()
+plot(b0)
+## Specify 100\% mixing now all species are present at all sites in
+## the same numbers:
+plot(betasim(p.mix=1))
+## Partial mixing:
+plot(betasim(p.mix=0.5))
+## Add Poisson randomness:
+plot(betasim(p.mix=0.5,rand="poisson"))
+## Change the number sites or the number of abundance classes: by
+## default, spcat (number of species per site per abundance
+## category) will be adapted to try to make the total number of species
+## come out correctly (i.e. spcat will be set to
+## totsp/(n.site*n.abund)).  If totsp is not an even multiple of
+## n.site*n.abund, the results may be unpredictable.
+plot(betasim(n.site=5,n.abund=3,p.mix=0.25,rand="poisson"))
+}
 

@@ -8,7 +8,8 @@ characteristics}
 simComm(n.indiv.site = rep(10, ncomm), n.site = rep(3, ncomm),
   spcat = rep(1, ncomm), ncomm = 2, p.mix = rep(0.5, ncomm),
   n.abund = rep(1, ncomm), totsp = rep(3, ncomm), rand = "poisson",
-  commlabs = letters[1:ncomm], retval = c("combined", "list"))
+  commlabs = letters[1:ncomm], retval = c("combined", "list"),
+  seed = NULL)
 }
 \arguments{
 \item{n.indiv.site}{individuals per site}
@@ -30,6 +31,8 @@ simComm(n.indiv.site = rep(10, ncomm), n.site = rep(3, ncomm),
 \item{commlabs}{labels for communities/treatments}
 
 \item{retval}{return communities as a single metacommunity matrix or as a list of community matrices?}
+
+\item{seed}{random-number seed}
 }
 \description{
 simulate multiple communities with different beta/abundance/etc.

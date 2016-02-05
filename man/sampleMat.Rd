@@ -2,19 +2,21 @@
 % Please edit documentation in R/Rarefaction_funs.R
 \name{sampleMat}
 \alias{sampleMat}
-\title{Resample a community matrix}
+\title{Individual-based resampling/rarefaction of a community matrix}
 \usage{
-sampleMat(x, n.target)
+sampleMat(x, n.target, debug = FALSE)
 }
 \arguments{
-\item{x}{a species abundance matrix to rarefy}
+\item{x}{a species abundance matrix to rarefy (rows=sites, columns=species)}
 
 \item{n.target}{rarefied size for each sample}
+
+\item{debug}{(logical) debugging flag}
 }
 \value{
 a matrix of the same structure as the original
 }
 \description{
-Resample a community matrix
+Individual-based resampling/rarefaction of a community matrix
 }
 

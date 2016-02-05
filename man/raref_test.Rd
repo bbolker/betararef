@@ -10,7 +10,8 @@ raref_test(comm, ttt, .progress = "text", n_raref = 50, type = c("Fmean",
 
 raref_test2(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
   binary = TRUE, ptype = c("raref_perm_medianp", "raref_perm_meanF",
-  "raref_perm_meanp"), return.all = FALSE, dummy_raref = FALSE)
+  "raref_perm_meanp"), return.all = FALSE, dummy_raref = FALSE,
+  seed = NULL)
 }
 \arguments{
 \item{comm}{community matrix (patches=rows, species=columns)}
@@ -36,8 +37,30 @@ raref_test2(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
 \item{return.all}{(logical) [TESTING ONLY] return all information rather than summarized test statistics?}
 
 \item{dummy_raref}{(logical) [TESTING ONLY] fake rarefaction? (i.e., don't actually do any rarefaction)}
+
+\item{seed}{random-number seed}
 }
 \description{
 Rarefaction test
+}
+\examples{
+set.seed(101)
+sx <- simComm(n.site=20,p.mix=0.5,n.indiv.site=c(10,20),totsp=c(20,40))
+plot(sx)
+raref_test2(sx[,-1],sx[,1])
+tmpf <- function(...) {
+   sx <- simComm(...)
+   tt <- try(raref_test2(sx[,-1],sx[,1])$p.value)
+   if (is(tt,"try-error")) return(NA) else return(tt)
+}
+\dontrun{
+## compute power for this case
+set.seed(101)
+system.time(pvec <- replicate(100,tmpf(n.site=20,p.mix=0.5,
+                       n.indiv.site=c(10,20),totsp=c(20,40))))
+## ~ 10 minutes
+hist(pvec,breaks=20,xlim=c(0,1),col="gray")
+mean(pvec<0.05)  ## 0; conservative (but very small sample!)
+}
 }
 

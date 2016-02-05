@@ -371,14 +371,24 @@ raref_test <- function(comm,ttt,.progress="text",n_raref=50,
 ##' @param ptype p-value calculations: "raref_perm_meanF", calculate mean F-statistics within permutations; "raref_perm_meanp", calculate mean p-value across permutations; "raref_perm_medianp", calculate median p-value across permutations.  The default (raref_perm_medianp) is used
 ##' @param seed random-number seed
 ##' @examples
+##' set.seed(101)
+##' sx <- simComm(n.site=20,p.mix=0.5,n.indiv.site=c(10,20),totsp=c(20,40))
+##' plot(sx)
+##' raref_test2(sx[,-1],sx[,1])
 ##' tmpf <- function(...) {
 ##'    sx <- simComm(...)
 ##'    tt <- try(raref_test2(sx[,-1],sx[,1])$p.value)
 ##'    if (is(tt,"try-error")) return(NA) else return(tt)
 ##' }
+##' \dontrun{
+##' ## compute power for this case
 ##' set.seed(101)
-##' sx <- simComm(n.site=20,p.mix=0.5,n.indiv.site=c(10,20),totsp=c(20,40))
-##' raref_test2(sx[,-1],sx[,1])
+##' system.time(pvec <- replicate(100,tmpf(n.site=20,p.mix=0.5,
+##'                        n.indiv.site=c(10,20),totsp=c(20,40))))
+##' ## ~ 10 minutes
+##' hist(pvec,breaks=20,xlim=c(0,1),col="gray")
+##' mean(pvec<0.05)  ## 0; conservative (but very small sample!)
+##' }
 ##' @export
 raref_test2 <- function(comm,ttt,n_raref=50,nperm=200,
                         method="jaccard",binary=TRUE,
@@ -391,7 +401,10 @@ raref_test2 <- function(comm,ttt,n_raref=50,nperm=200,
     ptype <- match.arg(ptype)
     matList <- split.data.frame(comm,ttt)
     nList <- lapply(matList,rowSums)  ## numbers per patch
-    tvec <- unlist(findTargets(nList))
+    ff <- findTargets(nList)
+    ## need to match targets list back with community matrix
+    ## *in the correct order*!  simple unlist() won't work
+    tvec <- unsplit(ff,ttt)
     if (any(tvec==0)) stop("uh-oh")
     dmat <- raply(n_raref,
               {

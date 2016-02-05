@@ -23,4 +23,11 @@ calcbeta(m, method = "jaccard", distances = c("centroid", "pairwise"),
 \description{
 Compute beta diversity summary statistic via distances from centroid
 }
+\examples{
+\dontrun{
+d1 <- replicate(1000,median(calcbeta(betasim(rand="poiss",p.mix=0.25))))
+par(las=1,bty="l")
+hist(d1,col="gray",main="",xlab="median Jaccard distance from centroid", freq=FALSE)
+}
+}
 
