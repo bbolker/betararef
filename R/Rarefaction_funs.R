@@ -295,76 +295,16 @@ simfun2 <- function(..., bstat, rarefy=TRUE,
                     nsim=nsim)
 }
 
-##' Rarefaction test
-##' 
-##' @param comm community matrix (patches=rows, species=columns)
-##' @param ttt treatment vector (treatment id of each patch)
-##' @param .progress progress bar type -- passed through to \code{\link{raply}}
-##' @param n_raref number of rarefactions
-##' @param type method for computing the p-value: "Fmean": compute mean observed F-statistic across rarefactions; compute p-value from the mean of the cumulative distribution functions of F statistics. "pmean": compute the mean observed p-value across replicates. "pbinom": compute the probability x>= N(obs>perm) for binom with size n_raref. "singlecomp": compute the probability that the observed values are less than the permutation values
-##' @param rarefy actually perform rarefaction? [TESTING ONLY]
-##' @export
-raref_test <- function(comm,ttt,.progress="text",n_raref=50,
-                       type=c("Fmean","pmean","pbinom","singlecomp"),
-                       rarefy=TRUE  
-                       )
-{
-    type <- match.arg(type)
-    ## split community by ttt so we can rarefy etc.
-    matList <- split.data.frame(comm,ttt)
-    nList <- lapply(matList,rowSums)  ## numbers per patch
-    tList <- findTargets(nList)
-    bstat <- if (type %in% c("Fmean","pbinom","singlecomp"))
-        "Fstat_perm" else "pval_Fstat_perm"
-    ss0 <- simfun1(matList,tList,ttt,
-                   bstat = bstat,
-                   rarefy=rarefy, .progress=.progress,
-                   nsim=n_raref)
-   if (type=="Fmean") {
-        ## compute mean observed F stat across rarefactions:
-        ## compute p-value from mean of CDFs of permutation F stats
-        permvals <- ss0[,-1] ## strip observed value
-        permvals <- t(apply(permvals,1,sort))  ## sort each ROW
-        ## calculate mean, quantiles by COLUMN
-        permdist <- colMeans(permvals)
-        obs <- mean(ss0[,1])
-        pval <- mean(obs<=permdist)
-    } else if (type %in% c("pbinom","singlecomp")) {
-        ## compute p-value from a single perm vs obs comparison
-        ## for each rarefaction
-        obsvals <- ss0[,1]
-        perm1 <- ss0[,2]
-        obs <- mean(obsvals)
-        if (type=="pbinom") {
-            ## p-value = prob x>= N(obs>perm) for binom with size n_raref
-            pval <- pbinom(q=sum(obsvals<=perm1),
-                           size=n_raref,
-                           prob=0.5,lower.tail=FALSE)
-        } else {
-            pval <- mean(obsvals<=perm1)
-        }
-    } else if (type=="pmean") {
-        ## mean permutation p-value across reps
-        pval <- mean(ss0[,"pval"])
-        obs <- mean(ss0[,"F"])
-    }
-    structure(list(
-        method=paste0("hierarchical rarefaction with permANOVA (n_raref=",
-        n_raref,",type=",type,")"),
-        data.name=deparse(substitute(comm)),
-        statistic = c("F"=obs),
-        p.value = pval),
-              class = "htest")
-}
 
-## Rarefaction testing with rarefactions within permutations
+##' Rarefaction testing with rarefactions within permutations
 ##' @importFrom plyr raply
 ##' @importFrom permute shuffle
-
-##' @rdname raref_test
-##' @inheritParams raref_test
+##' @param comm community matrix (patches=rows, species=columns)
+##' @param ttt treatment vector (treatment id of each patch)
+## @param .progress progress bar type -- passed through to \code{\link{raply}}
+##' @param n_raref number of rarefactions
 ##' @param dummy_raref (logical) [TESTING ONLY] fake rarefaction? (i.e., don't actually do any rarefaction)
-##' @param return.all  (logical) [TESTING ONLY] return all information rather than summarized test statistics?
+##' @param return.all  (logical) return all information rather than summarized test statistics?
 ##' @param nperm  number of permutations
 ##' @param binary reduce data to presence/absence? (passed to vegan::betadisper)
 ##' @param method beta diversity metric (passed to vegan::betadisper)
@@ -374,10 +314,10 @@ raref_test <- function(comm,ttt,.progress="text",n_raref=50,
 ##' set.seed(101)
 ##' sx <- simComm(n.site=20,p.mix=0.5,n.indiv.site=c(10,20),totsp=c(20,40))
 ##' plot(sx)
-##' raref_test2(sx[,-1],sx[,1])
+##' raref_test(sx[,-1],sx[,1])
 ##' tmpf <- function(...) {
 ##'    sx <- simComm(...)
-##'    tt <- try(raref_test2(sx[,-1],sx[,1])$p.value)
+##'    tt <- try(raref_test(sx[,-1],sx[,1])$p.value)
 ##'    if (is(tt,"try-error")) return(NA) else return(tt)
 ##' }
 ##' \dontrun{
@@ -390,13 +330,14 @@ raref_test <- function(comm,ttt,.progress="text",n_raref=50,
 ##' mean(pvec<0.05)  ## 0; conservative (but very small sample!)
 ##' }
 ##' @export
-raref_test2 <- function(comm,ttt,n_raref=50,nperm=200,
-                        method="jaccard",binary=TRUE,
-                        ptype=c( "raref_perm_medianp",
-                                "raref_perm_meanF","raref_perm_meanp"),
-                        return.all=FALSE,
-                        dummy_raref=FALSE,
-                        seed=NULL) {
+raref_test <- function(comm,ttt,n_raref=50,nperm=200,
+                       method="jaccard",binary=TRUE,
+                       ptype=c( "raref_perm_medianp",
+                               "raref_perm_meanF","raref_perm_meanp"),
+                       return.all=FALSE,
+                       dummy_raref=FALSE,
+                       seed=NULL) {
+    ## FIXME: add progress bar?
     if (!is.null(seed)) set.seed(seed)
     ptype <- match.arg(ptype)
     matList <- split.data.frame(comm,ttt)
@@ -432,7 +373,7 @@ raref_test2 <- function(comm,ttt,n_raref=50,nperm=200,
         for (j in seq(nperm)) {
             perm <- permMat[,j]
             perm.resid <- resids[perm]
-           f <- qr.fitted(mod.Q, perm.resid)
+            f <- qr.fitted(mod.Q, perm.resid)
             mss <- sum((f - mean(f))^2)
             r <- qr.resid(mod.Q, perm.resid)
             rss <- sum(r^2)

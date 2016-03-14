@@ -2,13 +2,9 @@
 % Please edit documentation in R/Rarefaction_funs.R
 \name{raref_test}
 \alias{raref_test}
-\alias{raref_test2}
-\title{Rarefaction test}
+\title{Rarefaction testing with rarefactions within permutations}
 \usage{
-raref_test(comm, ttt, .progress = "text", n_raref = 50, type = c("Fmean",
-  "pmean", "pbinom", "singlecomp"), rarefy = TRUE)
-
-raref_test2(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
+raref_test(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
   binary = TRUE, ptype = c("raref_perm_medianp", "raref_perm_meanF",
   "raref_perm_meanp"), return.all = FALSE, dummy_raref = FALSE,
   seed = NULL)
@@ -18,13 +14,7 @@ raref_test2(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
 
 \item{ttt}{treatment vector (treatment id of each patch)}
 
-\item{.progress}{progress bar type -- passed through to \code{\link{raply}}}
-
 \item{n_raref}{number of rarefactions}
-
-\item{type}{method for computing the p-value: "Fmean": compute mean observed F-statistic across rarefactions; compute p-value from the mean of the cumulative distribution functions of F statistics. "pmean": compute the mean observed p-value across replicates. "pbinom": compute the probability x>= N(obs>perm) for binom with size n_raref. "singlecomp": compute the probability that the observed values are less than the permutation values}
-
-\item{rarefy}{actually perform rarefaction? [TESTING ONLY]}
 
 \item{nperm}{number of permutations}
 
@@ -34,23 +24,23 @@ raref_test2(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
 
 \item{ptype}{p-value calculations: "raref_perm_meanF", calculate mean F-statistics within permutations; "raref_perm_meanp", calculate mean p-value across permutations; "raref_perm_medianp", calculate median p-value across permutations.  The default (raref_perm_medianp) is used}
 
-\item{return.all}{(logical) [TESTING ONLY] return all information rather than summarized test statistics?}
+\item{return.all}{(logical) return all information rather than summarized test statistics?}
 
 \item{dummy_raref}{(logical) [TESTING ONLY] fake rarefaction? (i.e., don't actually do any rarefaction)}
 
 \item{seed}{random-number seed}
 }
 \description{
-Rarefaction test
+Rarefaction testing with rarefactions within permutations
 }
 \examples{
 set.seed(101)
 sx <- simComm(n.site=20,p.mix=0.5,n.indiv.site=c(10,20),totsp=c(20,40))
 plot(sx)
-raref_test2(sx[,-1],sx[,1])
+raref_test(sx[,-1],sx[,1])
 tmpf <- function(...) {
    sx <- simComm(...)
-   tt <- try(raref_test2(sx[,-1],sx[,1])$p.value)
+   tt <- try(raref_test(sx[,-1],sx[,1])$p.value)
    if (is(tt,"try-error")) return(NA) else return(tt)
 }
 \dontrun{
