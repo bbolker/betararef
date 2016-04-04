@@ -22,13 +22,21 @@ raref_test(comm, ttt, n_raref = 50, nperm = 200, method = "jaccard",
 
 \item{binary}{reduce data to presence/absence? (passed to vegan::betadisper)}
 
-\item{ptype}{p-value calculations: "raref_perm_meanF", calculate mean F-statistics within permutations; "raref_perm_meanp", calculate mean p-value across permutations; "raref_perm_medianp", calculate median p-value across permutations.  The default (raref_perm_medianp) is used}
+\item{ptype}{p-value calculations: "raref_perm_meanF", calculate mean F-statistics within permutations; "raref_perm_meanp", calculate mean p-value across permutations; "raref_perm_medianp" (default), calculate median p-value across permutations.}
 
 \item{return.all}{(logical) return all information rather than summarized test statistics?}
 
 \item{dummy_raref}{(logical) [TESTING ONLY] fake rarefaction? (i.e., don't actually do any rarefaction)}
 
 \item{seed}{random-number seed}
+}
+\value{
+A list with class \code{"htest"} containing the following components:
+\item{method}{a string giving the method and number of rarefactions used}
+\item{estimate}{the mean beta diversity (measured as median distance from centroid) across all sites and rarefactions}
+\item{conf.int}{the confidence interval of the mean beta diversities across rarefactions}
+\item{statistic}{the median F-statistic across permutations}
+\item{p.value}{the p-value corresponding to the statistic}
 }
 \description{
 Rarefaction testing with rarefactions within permutations
