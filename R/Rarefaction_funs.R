@@ -335,6 +335,7 @@ simfun2 <- function(..., bstat, rarefy=TRUE,
 ##' hist(pvec,breaks=20,xlim=c(0,1),col="gray")
 ##' mean(pvec<0.05)  ## 0; conservative (but very small sample!)
 ##' }
+##' @importFrom stats quantile
 ##' @export
 raref_test <- function(comm,ttt,n_raref=50,nperm=200,
                        method="jaccard",binary=TRUE,

@@ -13,3 +13,5 @@ figure/
 # TeX files
 *.bbl
 *.blg
+*.aux
+*.log
