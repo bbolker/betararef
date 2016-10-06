@@ -73,11 +73,15 @@ zmargin <- theme(panel.margin=unit(0,"lines"))
 All the code that we use in the paper, and in the appendix, is available
 as an R package.  It can be installed via
 <<install_pkg,eval=FALSE,echo=TRUE>>=
-library(devtools)
+library(ghit)
 install_github("betararef",username="bbolker")
 @
-(you will need to install the \code{devtools} package from any
-standard CRAN repository first).
+You will need to install the \code{ghit} package from any
+standard CRAN repository first (if you have
+the \code{devtools} package installed, you
+can use that instead). Since the package contains only
+R code (no compiled C/C++/FORTRAN code), you should \emph{not}
+need to have other development tools installed.
 
 <<load_pkg,echo=TRUE>>=
 library("betararef")
@@ -373,6 +377,40 @@ meanalpha2 <- summarise(subset(ss0,sizediff==30 & popsize==20),
                     a.se=sd(value)/sqrt(length(value)))
 print(xtable(meanalpha2,digits=3),floating=FALSE,include.rownames=FALSE)
 @
+
+\section{Sample-based rarefaction}
+
+As we mention in the paper, our approach to multi-level rarefaction is based
+on individual-level rarefaction, in part because of the commonness of
+community data with only a single sample per patch (in which case sample-based
+rarefaction is useless) and in part because of the complexity of bookkeeping
+in the multi-sample/sample-based rarefaction case.
+
+If we stop worrying about the constraints of rarefying each patch to
+the minimum number of individuals found in any patch, in any treatment
+(which is what necessitates the complex matching strategy implemented
+in the package), we can come up with a reasonably simple strategy for
+rarefaction.
+
+\begin{itemize}
+\item pick the per-patch size $N$ to rarefy to
+\item for each patch in each community,
+  \begin{itemize}
+    \item while the accumulated patch size is $<N$,
+      pick a sample from that patch without replacement
+    \item if the next-chosen patch makes the patch size $>N$,
+      either
+      \begin{itemize}
+        \item take only the number of individuals from the sample that
+          brings the patch up to the target, \emph{or}
+        \item add the sample to the patch community,  then remove 
+          enough individuals from the community at random to bring
+          it back down to the target size
+      \end{itemize}
+  \end{itemize}
+\end{itemize}
+      
+We have not implemented this yet.
 
 \bibliography{appendix1}
 \end{document}
