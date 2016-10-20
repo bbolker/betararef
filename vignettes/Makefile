@@ -14,6 +14,6 @@
 	pdflatex --interaction=nonstopmode $*
 
 clean:
-	rm -f *.log *.aux *.md *.out *.nav *.snm *.toc *.vrb texput.log *~
+	rm -f *.log *.aux *.md *.out *.nav *.snm *.toc *.vrb *.blg *.bbl texput.log *~
 
 
