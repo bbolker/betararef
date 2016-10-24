@@ -163,13 +163,14 @@ characteristics) at the same time:
 plot(simComm(totsp=c(30,30),p.mix=c(0.2,0.7)))
 @
 
-%% stuff for Ecosphere appendix:
+%% uncomment for Ecosphere appendix:
 %% \pagebreak
 
-%% \renewcommand\thefigure{S\arabic{figure}}    
+%% \renewcommand\thefigure{S\arabic{figure}}
 %% \renewcommand{\thesection}{Appendix S\arabic{section}}
 %% \setcounter{section}{0}
 %% \setcounter{page}{1}
+%% \setcounter{figure}{0}
 
 \section{Alternative diversity indices}
 
@@ -283,6 +284,8 @@ ggplot(as2,aes(x=abund,y=value))+
 @
 
 \section{Power analyses}
+%% uncomment for Ecosphere
+%% \setcounter{figure}{0}
 
 We ran power analyses of hierarchical rarefaction analysis, varying the true difference in beta diversity, the average population/sample size per patch, the difference in population/sample size per patch, and the difference in the number of patches. We kept the average number of patches equal to 20, and the number of species per community equal to 20.
 
@@ -388,8 +391,7 @@ meanalpha2 <- summarise(subset(ss0,sizediff==30 & popsize==20),
 print(xtable(meanalpha2,digits=3),floating=FALSE,include.rownames=FALSE)
 @
 
-%% for Ecosphere:
-%%
+%% uncomment for Ecosphere:
 %% \bibliography{appendix1}
 %% \pagebreak
 
@@ -428,7 +430,6 @@ rarefaction.
 We have not implemented this yet.
 
 %% Comment out for Ecosphere
-
 \bibliography{appendix1}
 
 \end{document}
