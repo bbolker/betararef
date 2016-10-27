@@ -7,12 +7,17 @@
 \usepackage{color}
 \title{Appendices}
 \usepackage[english]{babel}  %% texi2dvi ~ bug
-\usepackage{natbib}
+% \usepackage{natbib} %% incompatible with biblatex
+\usepackage[
+backend=biber,
+authordate
+]{biblatex-chicago}
+\addbibresource{appendix1.bib}
 \author{Ben Bolker, Adrian Stier, Craig Osenberg}
 \date{\today @ \thistime}
-\bibliographystyle{chicago}
+%\bibliographystyle{chicago}
 \begin{document}
-\maketitle
+%\maketitle
 \newcommand{\code}[1]{{\tt #1}}
 \newcommand{\fixme}[1]{{\color{red} \textbf{#1}}}
 \newcommand{\bmb}[1]{{\color{blue} \emph{#1}}}
@@ -70,6 +75,16 @@ gstuff3 <- list(geom_point(),
 zmargin <- theme(panel.margin=unit(0,"lines"))
 @ 
 
+%% uncomment for Ecosphere appendix:
+\renewcommand\thefigure{S\arabic{figure}}
+\renewcommand{\thesection}{Appendix S\arabic{section}}
+\makeatletter
+\@addtoreset{figure}{section}
+\makeatother
+\setcounter{section}{0}
+\setcounter{page}{1}
+\setcounter{figure}{0}
+
 \section{Code/introduction}
 
 All the code that we use in the paper, and in the appendix, is available
@@ -85,9 +100,15 @@ can use that instead). Since the package contains only
 R code (no compiled C/C++/FORTRAN code), you should \emph{not}
 need to have other development tools installed.
 
+To begin using the package you need to load it
+(it needs to be installed only once per R installation,
+but loaded every time you start a new R session):
+
 <<load_pkg,echo=TRUE>>=
-library("betararef")
+library(betararef)
 @
+
+\clearpage
 
 \section{Community simulator}
 
@@ -115,12 +136,13 @@ Here are some typical examples.   If we use all of the default
 values for \code{betasim}, we get 3 sites (rows) with a total of
 30 species: 5 abundance classes $\times$ 2 species per site $\times$ 3 sites.
 By default there is no mixing among sites (100\% beta diversity), so looking
-at the default plot (rows=sites, columns=species) we see that each site has blocks of 2 species from each abundance class (grayscale indicates prevalence).
+at the default plot (rows=sites, columns=species) we see that each site has blocks of 2 species from each abundance class (grayscale indicates prevalence)
+(Figure~\ref{fig:beta_ex1}).
 (The default for \code{betasim} (but not for \code{simComm})
 is to introduce no randomness at all, simply returning a matrix with the
 \emph{expected} number of individuals of each species at each site.)
 
-<<beta_ex1,fig.width=12,out.width="1.2\\textwidth">>=
+<<beta_ex1,fig.width=12,out.width="1.2\\textwidth",fig.cap="Species matrix for default \\code{betasim} settings: 3 sites, 10 species per site (5 abundance classes/2 spp per abundance class), no mixing.">>=
 library(betararef)
 set.seed(101)
 b0 <- betasim()
@@ -128,29 +150,30 @@ plot(b0)
 @
 
 If we allow 100\% mixing, then all species are present at all sites in
-the same numbers:
-<<mixplot,fig.width=12,out.width="1.2\\textwidth">>=
+the same numbers (Figure~\ref{fig:mixplot}).
+We can also allow partial mixing (Figure~\ref{fig:partmix})
+and Poisson variation in the output (Figure~\ref{fig:poissmix}).
+
+<<mixplot,fig.width=12,out.width="1.2\\textwidth",fig.cap="Species matrix for \\code{betasim()} with default parameters (3 sites/5 abundance classes/2 spp per AC) but 100\\% mixing.">>=
 plot(betasim(p.mix=1))
 @
 
-We can of course allow partial mixing:
-<<partmix,fig.width=12,out.width="1.2\\textwidth">>=
+<<partmix,fig.width=12,out.width="1.2\\textwidth",fig.cap="Species matrix for \\code{betasim()} with default parameters (3 sites/5 abundance classes/2 spp per AC) and 50\\% mixing for all abundance classes.">>=
 plot(betasim(p.mix=0.5))
 @
 
-Now we add Poisson randomness:
-<<poissmix,fig.width=12,out.width="1.2\\textwidth">>=
+<<poissmix,fig.width=12,out.width="1.2\\textwidth",fig.cap="Species matrix for \\code{betasim()} with default parameters (3 sites/5 abundance classes/2 spp per AC) with 50\\% mixing for all abundance classes and incorporating Poisson variation in the output.">>=
 plot(betasim(p.mix=0.5,rand="poisson"))
 @
 
-We can change the number sites or the number of abundance classes: by default, the \code{spcat} (number of species per site per abundance category) will be adapted to try to make the total number of species come out correctly (i.e. \code{spcat} will be set to \code{totsp/(n.site*n.abund)}.  If \code{totsp} is not an even multiple of \code{n.site*n.abund}, the results may be slightly unpredictable \ldots
-<<diffsites,fig.width=12,out.width="1.2\\textwidth">>=
+We can change the number sites or the number of abundance classes: by default, the \code{spcat} (number of species per site per abundance category) will be adapted to try to make the total number of species come out correctly (i.e. \code{spcat} will be set to \code{totsp/(n.site*n.abund)}: Figure~\ref{fig:diffsites}).  If \code{totsp} is not an even multiple of \code{n.site*n.abund}, the results may be slightly unpredictable \ldots
+<<diffsites,fig.width=12,out.width="1.2\\textwidth",fig.cap="Species matrix for \\code{betasim()} with 5 sites, 3 abundance classes, 2 spp per AC, 25\\% mixing for all abundance classes, and Poisson variation.">>=
 plot(betasim(n.site=5,n.abund=3,p.mix=0.25,rand="poisson"))
 @
 
 \code{calcbeta} calculates distances from the centroid (by default,
-using a Jaccard index on presence-absence data):
-<<centrdisthist,cache=TRUE>>=
+using a Jaccard index on presence-absence data: Figure~\ref{fig:centrdisthist}).
+<<centrdisthist,cache=TRUE,fig.cap="Histogram of \\code{calcbeta} output for 10000 simulated communities (median Jaccard distance to centroid).">>=
 d1 <- replicate(1000,median(calcbeta(betasim(rand="poiss",p.mix=0.25))))
 par(las=1,bty="l")
 hist(d1,col="gray",main="",xlab="median Jaccard distance from centroid",
@@ -158,8 +181,8 @@ hist(d1,col="gray",main="",xlab="median Jaccard distance from centroid",
 @
 
 \code{simComm} simulates multiple communities (with  possibly different
-characteristics) at the same time:
-<<simcomm,fig.width=16>>=
+characteristics) at the same time (Figure~\ref{fig:simcomm}).
+<<simcomm,fig.width=16,fig.cap="Output of \\code{simComm}: two communities simualted simultaneously, with 30 species at each site and mixing proportions of 0.2 and 0.7 respectively.">>=
 plot(simComm(totsp=c(30,30),p.mix=c(0.2,0.7)))
 @
 
@@ -172,7 +195,10 @@ plot(simComm(totsp=c(30,30),p.mix=c(0.2,0.7)))
 %% \setcounter{page}{1}
 %% \setcounter{figure}{0}
 
+\clearpage
+
 \section{Alternative diversity indices}
+\begin{refsection}
 
 In the main text we focus on the Jaccard index based on binary
 (presence-absence) data. The literature is full of alternative
@@ -182,7 +208,7 @@ different indices, we should at least consider what would happen
 if we were to use an index based on continuous (count) data instead.
 Figure~\ref{fig:manhattanpairwise} shows results for the Manhattan index 
 (we use either Hellinger or square root transformations as recommended by 
-\cite{legendre_2013}; however, \cite{legendre_2013} have also criticized the Manhattan index,
+\textcite{legendre_2013}; however, \cite{legendre_2013} have also criticized the Manhattan index,
 saying that in particular it does not properly handle situations where multiple
 sites are missing the same pairs of species).
 
@@ -282,6 +308,9 @@ ggplot(as2,aes(x=abund,y=value))+
 ## gfun("gower","centroid")
 
 @
+
+\printbibliography
+\end{refsection}
 
 \section{Power analyses}
 %% uncomment for Ecosphere
@@ -427,9 +456,6 @@ rarefaction.
   \end{itemize}
 \end{itemize}
       
-We have not implemented this yet.
-
-%% Comment out for Ecosphere
-\bibliography{appendix1}
+We have not implemented this functionality yet.
 
 \end{document}
