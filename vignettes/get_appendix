@@ -1,0 +1,6 @@
+#! /bin/bash
+pdftk appendix1.pdf cat 1-1 output AppendixS1.pdf
+pdftk appendix1.pdf cat 2-7 output AppendixS2.pdf
+pdftk appendix1.pdf cat 8-11 output AppendixS3.pdf
+pdftk appendix1.pdf cat 12 output AppendixS4.pdf
+pdftk appendix1.pdf cat 13 output AppendixS5.pdf

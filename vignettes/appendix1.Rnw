@@ -5,6 +5,11 @@
 \documentclass{article}
 \usepackage{scrtime}
 \usepackage{color}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{ifthen}
+\newboolean{ecosphere}
+\setboolean{ecosphere}{false}
+
 \title{Appendices}
 \usepackage[english]{babel}  %% texi2dvi ~ bug
 % \usepackage{natbib} %% incompatible with biblatex
@@ -12,6 +17,8 @@
 backend=biber,
 authordate
 ]{biblatex-chicago}
+\usepackage{amsmath} % for numberwithin
+\usepackage{etoolbox}
 \addbibresource{appendix1.bib}
 \author{Ben Bolker, Adrian Stier, Craig Osenberg}
 \date{\today @ \thistime}
@@ -50,7 +57,7 @@ theme_update(axis.text.x=element_text(colour="black",size=12),
           panel.grid.minor = element_blank(),
           panel.grid.major = element_blank(),
           panel.background=element_rect(fill="white",colour="white"),
-          panel.margin=unit(0,"lines"))
+          panel.spacing=unit(0,"lines"))
 ## general-purpose setup for multi-faceted beta sim results
 gstuff <- list(geom_point(),
                geom_line(aes(group=interaction(spcurve,st))),
@@ -72,18 +79,27 @@ gstuff3 <- list(geom_point(),
                geom_line(aes(group=st)),
                scale_x_log10(labels=trans_format('log10', math_format())),
                scale_colour_brewer(name="# patches",palette="Dark2"))
-zmargin <- theme(panel.margin=unit(0,"lines"))
+zmargin <- theme(panel.spacing=unit(0,"lines"))
 @ 
 
-%% uncomment for Ecosphere appendix:
-\renewcommand\thefigure{S\arabic{figure}}
-\renewcommand{\thesection}{Appendix S\arabic{section}}
-\makeatletter
-\@addtoreset{figure}{section}
-\makeatother
-\setcounter{section}{0}
-\setcounter{page}{1}
-\setcounter{figure}{0}
+
+%% FIXME: couldn't make this work with ifthenelse.
+%% uncomment for ecosphere
+%%%%%% \ifthenelse{\boolean{ecosphere}}{
+%% \numberwithin{page}{section}
+%% \numberwithin{figure}{section}
+%% \renewcommand\thefigure{S\arabic{figure}}
+%% \renewcommand{\thesection}{Appendix S\arabic{section}}
+%% \renewcommand{\thepage}{\arabic{page}}
+%% \makeatletter
+%% \patchcmd{\@sect}% <cmd>
+%%          {\protected@edef}% <search>
+%%          {\def\arg{#1}\def\arg@{section}%
+%%            \ifx\arg\arg@\stepcounter{page}\fi%
+%%            \protected@edef}% <replace>
+%%          {}{}% <success><failure>
+%%  \makeatother
+%%%%%%%%% }{}  %% end ifthenelse
 
 \section{Code/introduction}
 
@@ -91,7 +107,7 @@ All the code that we use in the paper, and in the appendix, is available
 as an R package.  It can be installed via
 <<install_pkg,eval=FALSE,echo=TRUE>>=
 library(ghit)
-install_github("betararef",username="bbolker")
+install_github("bbolker/betararef")
 @
 You will need to install the \code{ghit} package from any
 standard CRAN repository first (if you have
@@ -108,7 +124,9 @@ but loaded every time you start a new R session):
 library(betararef)
 @
 
+\ifthenelse{\boolean{ecosphere}}{
 \clearpage
+}{}
 
 \section{Community simulator}
 
@@ -130,7 +148,7 @@ specified rules.  The parameters of the simulation are as follows:
 \end{description}
      
 In general the simulator returns a site $\times$ species matrix, which we can
-postprocess with the tools from \code{vegan} to compute beta diversities.
+post-process with the tools from \code{vegan} to compute beta diversities.
 
 Here are some typical examples.   If we use all of the default
 values for \code{betasim}, we get 3 sites (rows) with a total of
@@ -182,20 +200,15 @@ hist(d1,col="gray",main="",xlab="median Jaccard distance from centroid",
 
 \code{simComm} simulates multiple communities (with  possibly different
 characteristics) at the same time (Figure~\ref{fig:simcomm}).
-<<simcomm,fig.width=16,fig.cap="Output of \\code{simComm}: two communities simualted simultaneously, with 30 species at each site and mixing proportions of 0.2 and 0.7 respectively.">>=
+<<simcomm,fig.width=12,out.width="1.2\\textwidth",fig.cap="Output of \\code{simComm}: two communities simulated simultaneously, with 30 species at each site and mixing proportions of 0.2 and 0.7 respectively.">>=
 plot(simComm(totsp=c(30,30),p.mix=c(0.2,0.7)))
 @
 
-%% uncomment for Ecosphere appendix:
-%% \pagebreak
-
-%% \renewcommand\thefigure{S\arabic{figure}}
-%% \renewcommand{\thesection}{Appendix S\arabic{section}}
-%% \setcounter{section}{0}
-%% \setcounter{page}{1}
-%% \setcounter{figure}{0}
-
+\ifthenelse{\boolean{ecosphere}}{
 \clearpage
+\pagebreak
+}{}
+
 
 \section{Alternative diversity indices}
 \begin{refsection}
@@ -270,7 +283,7 @@ increasing sample size as other density-based metrics such
 as the Manhattan index, but the curves are identical across all other
 axes of variation.
 
-<<alldists,fig.cap="Beta diversity curves (scaled 0-1 for each diversity metric) as a function of sample size for a range of distribution for pmixrare=pmixcommon=0.5.",fig.scap="Beta diversity curves",fig.width=7,fig.height=7,out.width="\\textwidth">>=
+<<alldists,fig.cap="Beta diversity curves (scaled 0-1 for each diversity metric) as a function of sample size for a range of distribution for {\\tt pmixrare}={\\tt pmixcommon}=0.5.",fig.scap="Beta diversity curves",fig.width=7,fig.height=7,out.width="\\textwidth">>=
 ## L <- load("batchfiles/betasim_batch11_allvals.RData")
 ## as <- subset(allvals,pmixcommon == 0.5 & pmixrare == 0.5)
 ## library("plyr") ## for ddply
@@ -284,7 +297,7 @@ axes of variation.
 load("batchfiles/betasim_batch11_sum.RData")
 ggplot(as2,aes(x=abund,y=value))+
        geom_point(aes(colour=factor(st),shape=factor(spcurve)))+
-       geom_line(aes(colour=factor(st),shape=factor(spcurve)))+
+       geom_line(aes(colour=factor(st),linetype=factor(spcurve)))+
        scale_shape_discrete(name="rank-abund param")+
        scale_x_log10(labels=trans_format('log10', math_format()))+
        scale_colour_brewer(name="# patches",palette="Dark2")+
@@ -312,9 +325,12 @@ ggplot(as2,aes(x=abund,y=value))+
 \printbibliography
 \end{refsection}
 
+\ifthenelse{\boolean{ecosphere}}{
+\clearpage
+\pagebreak
+}{}
+
 \section{Power analyses}
-%% uncomment for Ecosphere
-%% \setcounter{figure}{0}
 
 We ran power analyses of hierarchical rarefaction analysis, varying the true difference in beta diversity, the average population/sample size per patch, the difference in population/sample size per patch, and the difference in the number of patches. We kept the average number of patches equal to 20, and the number of species per community equal to 20.
 
@@ -379,7 +395,7 @@ ggplot(pow2,aes(x=pmixdiff,y=value,colour=factor(sizediff),
     zmargin
 @
 
-The results show that for a per-patch population size of 20, the test is actually slightly conservative (i.e., the probability of rejecting the null hypothesis with $\alpha=0.05$ when it is true (pmixdiff=0) is actually slightly less than $0.05$; for a per-patch population size of 10, the results are slightly anticonservative.  The power curves (i.e., power to detect a specified level of difference in beta diversity) changes little as a function of per-patch population size or population size difference, and declines slightly with increasing asymmetry in the number of patches per site, probably driven by low power in the community with the small number of patches.
+The results show that for a per-patch population size of 20, the test is actually slightly conservative (i.e., the probability of rejecting the null hypothesis with $\alpha=0.05$ when it is true (pmixdiff=0) is actually slightly less than $0.05$; for a per-patch population size of 10, the results are slightly anticonservative.  The power curves (i.e., power to detect a specified level of difference in beta diversity) change little as a function of per-patch population size or population size difference, and declines slightly with increasing asymmetry in the number of patches per site, probably driven by low power in the community with the small number of patches.
 
 <<powspec,echo=FALSE,fig.scap="Type I error rates",fig.cap="Type I error rates (rejection rates when \\code{pmixdiff}=0).",fig.width=10>>=
 ss0 <- subset(pow2,pmixdiff==0)
@@ -420,9 +436,13 @@ meanalpha2 <- summarise(subset(ss0,sizediff==30 & popsize==20),
 print(xtable(meanalpha2,digits=3),floating=FALSE,include.rownames=FALSE)
 @
 
-%% uncomment for Ecosphere:
+
+
+\ifthenelse{\boolean{ecosphere}}{
+%% comment for Ecosphere:
 %% \bibliography{appendix1}
-%% \pagebreak
+\pagebreak
+}{}
 
 \section{Sample-based rarefaction}
 
