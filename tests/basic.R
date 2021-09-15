@@ -15,3 +15,13 @@ expect_equal(mean(d3),115.47,tol=1e-5)
 
 rr <- betararef:::rtrpois(100000,lambda=4.5)
 expect_equal(mean(rr),4.5,tol=5e-3)
+
+## GH #2
+comm <- data.frame(matrix(ncol=4, nrow=5))
+set.seed(625)
+for(i in 1:5) {
+    comm[i,] <- round(rpois(n = 4, lambda=3),digits = 0)
+}
+m.vec <- c(5,8,4,4,6)
+comm.raref<-sampleMat(comm, n.target = m.vec)
+stopifnot(all(rowSums(comm.raref)==m.vec))

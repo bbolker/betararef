@@ -126,11 +126,12 @@ findTargets <- function(nList,method=c("rankMatch","randomMatch","smallest"),
     
 ## rarefies species abundance vector single treatment down to 'n.target' individuals
 sampleRow <- function(xmat,n.target,spnames=names(xmat)) {
-  spvec <- rep(spnames,xmat)  ## expand species counts to a vector of individuals for each row
-  if (n.target==length(xmat)) return(xmat)  ## don't really rarefy
-  ## subsample and collapse back down to a species count
-  table(factor(sample(spvec,replace=FALSE,size=n.target),
-               levels=spnames))
+    spvec <- rep(spnames,xmat)  ## expand species counts to a vector of individuals for each row
+    ## number of individuals is equal to n.target, don't really rarefy
+    if (n.target==length(spvec)) return(xmat)
+    ## subsample and collapse back down to a species count
+    table(factor(sample(spvec,replace=FALSE,size=n.target),
+                 levels=spnames))
 }
 
 ##' Individual-based resampling/rarefaction of a community matrix

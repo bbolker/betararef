@@ -1,8 +1,9 @@
+\documentclass{article}
+%% vignette index specifications must be *after* \documentclass{}
 %\VignetteEngine{knitr::knitr}
 %\VignetteDepends{ggplot2}
 %\VignetteDepends{xtable}
 %\VignetteIndexEntry{Using the betararef package}
-\documentclass{article}
 \usepackage{scrtime}
 \usepackage{color}
 \usepackage[margin=1.25in]{geometry}
@@ -106,10 +107,9 @@ zmargin <- theme(panel.spacing=unit(0,"lines"))
 All the code that we use in the paper, and in the appendix, is available
 as an R package.  It can be installed via
 <<install_pkg,eval=FALSE,echo=TRUE>>=
-library(ghit)
-install_github("bbolker/betararef")
+remotes::install_github("bbolker/betararef")
 @
-You will need to install the \code{ghit} package from any
+You will need to install the \code{remotes} package from any
 standard CRAN repository first (if you have
 the \code{devtools} package installed, you
 can use that instead). Since the package contains only

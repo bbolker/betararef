@@ -2,8 +2,6 @@ Package: betararef
 Version: 0.12
 Title: Beta Diversity with Rarefaction
 Authors@R: c(person("Ben","Bolker",email="bolker@mcmaster.ca", role=c("aut","cre")))
-Author: Ben Bolker [aut, cre]
-Maintainer: Ben Bolker <bolker@mcmaster.ca>
 Description: Compute beta diversity in communities with different average
     population sizes via hierarchical rarefaction; also provides tools for
     simulating communities.
@@ -21,7 +19,9 @@ Imports:
     permute
 Suggests:
     testthat,
-    xtable
+    xtable,
+    knitr
+VignetteBuilder: knitr
 License: GPL
 LazyData: true
 RoxygenNote: 5.0.1
